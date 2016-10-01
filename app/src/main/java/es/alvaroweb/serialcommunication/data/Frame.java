@@ -4,11 +4,13 @@
 package es.alvaroweb.serialcommunication.data;
 
 
+import com.hoho.android.usbserial.util.HexDump;
+
 /*
  * TODO: Create JavaDoc
  */
 public class Frame {
-    private static final int MAX_FRAME_SIZE = 70;
+    private static final int MAX_FRAME_SIZE = 72;
 
     public byte[] getFrameAsByteArray() {
         return mFrame;
@@ -32,11 +34,6 @@ public class Frame {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(mCount + "(");
-        for(int i = 0; i < mCount; i++){
-            sb.append(Integer.toString((mFrame[i]+128), 16) + ",")  ;
-        }
-        sb.append(")");
-        return sb.toString();
+        return HexDump.dumpHexString(mFrame);
     }
 }
