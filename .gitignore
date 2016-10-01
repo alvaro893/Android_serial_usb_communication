@@ -5,6 +5,6 @@
 /.idea/libraries
 .DS_Store
 /build
-usb/SerialForAndroid/build
+usbSerialForAndroid/build
 /captures
 .externalNativeBuild
