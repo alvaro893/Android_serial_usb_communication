@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import es.alvaroweb.serialcommunication.data.BufferFrames;
+import es.alvaroweb.serialcommunication.data.Chunk;
+
 
 /*
  * TODO: Create JavaDoc
@@ -34,6 +37,7 @@ public class SerialUsbHelper {
     private SerialInputOutputManager mSerialIoManager;
     private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
     private UsbSerialPort mPort;
+    private BufferFrames bufferFrames;
 
     public final SerialInputOutputManager.Listener mListener =
             new SerialInputOutputManager.Listener() {
@@ -48,8 +52,13 @@ public class SerialUsbHelper {
                     context.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            ((MainActivity) context).updateReceivedData(data);
-                            mApiConnection.postData(data);
+                            if(bufferFrames.isFull()){
+                                stop();
+                                ((MainActivity) context).updateReceivedData(bufferFrames);
+                            }else{
+                                bufferFrames.addChunk(new Chunk(data));
+                            }
+
                         }
                     });
                 }
@@ -94,6 +103,7 @@ public class SerialUsbHelper {
                     UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
 
             Log.i(TAG, "Starting io manager ..");
+            bufferFrames = new BufferFrames();
             mSerialIoManager = new SerialInputOutputManager(mPort, mListener);
             mExecutor.submit(mSerialIoManager);
 

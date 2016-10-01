@@ -9,8 +9,9 @@ import java.util.Arrays;
  * TODO: Create JavaDoc
  */
 public class BufferFrames {
-    private final static byte FF = Byte.MAX_VALUE;
-    private final static byte[] INITIAL_SEQUENCE = {FF, FF, FF};
+    // NOTE: bytes values in java are from -126 to 127, but -1 is 0x77 equivalent
+    final static byte FF = -1;
+    final static byte[] INITIAL_SEQUENCE = {FF, FF, FF};
     private static final int MAX_BUFFER = 20;
     private byte[] mSequence = new byte[3];
     private boolean mItIsFirstTime = true;
@@ -53,13 +54,13 @@ public class BufferFrames {
      * this prevents to add the initial sequence FF FF FF as part of the frame
      */
     private boolean itIsFirstTime() {
-        boolean current = mItIsFirstTime;
-        if (current) {
+        if (mItIsFirstTime) {
             mCurrentFrame = new Frame();
         }
+        boolean itIsFirstTime = mItIsFirstTime;
         mItIsFirstTime = false;
 
-        return current;
+        return itIsFirstTime;
     }
 
 
@@ -82,4 +83,7 @@ public class BufferFrames {
         return Arrays.equals(mSequence, INITIAL_SEQUENCE);
     }
 
+    public boolean isFull() {
+        return mFramesCount >= mBuffer.length -1;
+    }
 }

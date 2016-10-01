@@ -2,6 +2,7 @@ package es.alvaroweb.serialcommunication;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -9,6 +10,9 @@ import android.widget.TextView;
 import com.hoho.android.usbserial.util.HexDump;
 
 import java.io.IOException;
+
+import es.alvaroweb.serialcommunication.data.BufferFrames;
+import es.alvaroweb.serialcommunication.data.Frame;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -60,5 +64,15 @@ public class MainActivity extends AppCompatActivity {
         final String message = "Read " + data.length + " bytes: \n"
                 + HexDump.dumpHexString(data) + "\n";
         dataFoundView.append(message);
+    }
+
+    public void updateReceivedData(BufferFrames bufferFrames) {
+        for(Frame f : bufferFrames.getmBuffer()){
+            if(f == null){
+                Log.d(TAG, "frame dropped!!!");
+                continue;
+            }
+            updateReceivedData(f.getFrameAsByteArray());
+        }
     }
 }
