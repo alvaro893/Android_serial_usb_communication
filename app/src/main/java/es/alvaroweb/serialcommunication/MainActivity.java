@@ -1,5 +1,6 @@
 package es.alvaroweb.serialcommunication;
 
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +14,9 @@ import java.io.IOException;
 
 import es.alvaroweb.serialcommunication.data.BufferFrames;
 import es.alvaroweb.serialcommunication.data.Frame;
+import es.alvaroweb.serialcommunication.networking.ServerConnection;
+
+import static android.os.Build.VERSION_CODES.N;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     SerialUsbHelper serialUsbHelper;
     private Button readButton;
     private Button stopButton;
+    private ServerConnection server;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         dataFoundView = (TextView) findViewById(R.id.textView2);
         readButton = (Button) findViewById(R.id.button2);
         stopButton = (Button) findViewById(R.id.button3);
+        server = new ServerConnection();
     }
 
     public void findUsbDevices(View v) throws IOException {
@@ -73,6 +79,18 @@ public class MainActivity extends AppCompatActivity {
                 continue;
             }
             updateReceivedData(f.getFrameAsByteArray());
+            NetworkTask networkTask = new NetworkTask();
+            networkTask.execute(f);
+        }
+        //server.closeConnection();
+    }
+
+    private class NetworkTask extends AsyncTask<Frame, Void, Void>{
+
+        @Override
+        protected Void doInBackground(Frame... params) {
+            server.postFrame(params[0]);
+            return null;
         }
     }
 }
