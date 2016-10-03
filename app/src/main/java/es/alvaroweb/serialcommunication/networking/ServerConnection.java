@@ -15,8 +15,6 @@ import java.net.URL;
 
 import es.alvaroweb.serialcommunication.data.Frame;
 
-import static android.content.ContentValues.TAG;
-
 /*
  * TODO: Create JavaDoc
  */
@@ -24,6 +22,7 @@ public class ServerConnection {
     private static final String SCHEME_HTTP = "http";
     private static final String AUTHORITY = "users.metropolia.fi";
     private static final String MAIN_PATH = "~alvarob/";
+    private static final String LOG_TAG = ServerConnection.class.getSimpleName();
     private final String RELATIVE_URL = "saveData.php";
     private final Uri.Builder mUri;
     private final URL mPostFrameUrl;
@@ -62,9 +61,9 @@ public class ServerConnection {
             mConnection = (HttpURLConnection) mPostFrameUrl.openConnection();
             mConnection.setDoOutput(true);
             mConnection.setRequestMethod("POST");
+            mConnection.setRequestProperty("Connection", "Keep-Alive");
             mConnection.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
             mConnection.setUseCaches(false);
-            mConnection.setRequestProperty("Connection", "Keep-Alive");
 
             OutputStream out = mConnection.getOutputStream();
             out.write(FIELD.getBytes());
@@ -72,7 +71,7 @@ public class ServerConnection {
 
             int code = mConnection.getResponseCode();
             String response = mConnection.getResponseMessage();
-            Log.d(TAG, "response: " + code + ", " + response + " bytes sent: " +
+            Log.d(LOG_TAG, "response: " + code + ", " + response + " bytes sent: " +
                     FIELD.getBytes().length + frame.getFrameAsByteArray().length);
 
             out.flush();

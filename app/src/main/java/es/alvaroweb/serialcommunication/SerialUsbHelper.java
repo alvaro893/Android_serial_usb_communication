@@ -49,18 +49,17 @@ public class SerialUsbHelper {
 
                 @Override
                 public void onNewData(final byte[] data) {
-                    context.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(bufferFrames.isFull()){
-                                bufferFrames = new BufferFrames();
+                    if(bufferFrames.isFull()){
+                        context.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
                                 ((MainActivity) context).updateReceivedData(bufferFrames);
-                            }else{
-                                bufferFrames.addChunk(new Chunk(data));
                             }
-
-                        }
-                    });
+                        });
+                        bufferFrames = new BufferFrames(); // stop();
+                    }else{
+                        bufferFrames.addChunk(new Chunk(data));
+                    }
                 }
             };
 
