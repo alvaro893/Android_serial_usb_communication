@@ -53,7 +53,7 @@ public class SerialUsbHelper {
                         @Override
                         public void run() {
                             if(bufferFrames.isFull()){
-                                stop();
+                                bufferFrames = new BufferFrames();
                                 ((MainActivity) context).updateReceivedData(bufferFrames);
                             }else{
                                 bufferFrames.addChunk(new Chunk(data));
@@ -69,6 +69,7 @@ public class SerialUsbHelper {
     public SerialUsbHelper(Activity context) {
         this.context = context;
         this.mApiConnection = new ApiConnection(context);
+        this.bufferFrames = new BufferFrames();
     }
 
 
@@ -103,7 +104,6 @@ public class SerialUsbHelper {
                     UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
 
             Log.i(TAG, "Starting io manager ..");
-            bufferFrames = new BufferFrames();
             mSerialIoManager = new SerialInputOutputManager(mPort, mListener);
             mExecutor.submit(mSerialIoManager);
 

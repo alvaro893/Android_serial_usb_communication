@@ -6,20 +6,16 @@ package es.alvaroweb.serialcommunication.networking;
 import android.net.Uri;
 import android.util.Log;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
 
 import es.alvaroweb.serialcommunication.data.Frame;
-import retrofit2.http.Url;
 
 import static android.content.ContentValues.TAG;
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
-import static java.lang.annotation.ElementType.FIELD;
 
 /*
  * TODO: Create JavaDoc
@@ -67,13 +63,17 @@ public class ServerConnection {
             mConnection.setDoOutput(true);
             mConnection.setRequestMethod("POST");
             mConnection.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+            mConnection.setUseCaches(false);
+            mConnection.setRequestProperty("Connection", "Keep-Alive");
+
             OutputStream out = mConnection.getOutputStream();
             out.write(FIELD.getBytes());
             out.write(frame.getFrameAsByteArray());
 
             int code = mConnection.getResponseCode();
             String response = mConnection.getResponseMessage();
-            Log.d(TAG, "response: " + code + ", " + response);
+            Log.d(TAG, "response: " + code + ", " + response + " bytes sent: " +
+                    FIELD.getBytes().length + frame.getFrameAsByteArray().length);
 
             out.flush();
             out.close();
