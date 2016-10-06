@@ -3,7 +3,6 @@
  */
 package es.alvaroweb.serialcommunication;
 
-import android.app.Activity;
 import android.content.Context;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
@@ -29,15 +28,15 @@ import es.alvaroweb.serialcommunication.data.Chunk;
 public class SerialUsbHelper {
     private static final String TAG = SerialUsbHelper.class.getSimpleName();
     private static final int BAUD_RATE = 115200;
-    private final ApiConnection mApiConnection;
     private String deviceName;
     private UsbSerialDriver driver;
-    private final Activity context;
+    private final Context context;
     private UsbDeviceConnection connection;
     private SerialInputOutputManager mSerialIoManager;
     private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
     private UsbSerialPort mPort;
     private BufferFrames bufferFrames;
+    private OnBufferFull callback;
 
     public final SerialInputOutputManager.Listener mListener =
             new SerialInputOutputManager.Listener() {
@@ -50,12 +49,13 @@ public class SerialUsbHelper {
                 @Override
                 public void onNewData(final byte[] data) {
                     if(bufferFrames.isFull()){
-                        context.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ((MainActivity) context).updateReceivedData(bufferFrames);
-                            }
-                        });
+//                        context.runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                ((MainActivity) context).updateReceivedData(bufferFrames);
+//                            }
+//                        });
+                        callback.getBuffer(bufferFrames);
                         bufferFrames = new BufferFrames(); // stop();
                     }else{
                         bufferFrames.addChunk(new Chunk(data));
@@ -65,10 +65,10 @@ public class SerialUsbHelper {
 
 
 
-    public SerialUsbHelper(Activity context) {
+    public SerialUsbHelper(Context context, OnBufferFull callback) {
         this.context = context;
-        this.mApiConnection = new ApiConnection(context);
         this.bufferFrames = new BufferFrames();
+        this.callback = callback;
     }
 
 
@@ -92,7 +92,9 @@ public class SerialUsbHelper {
         return deviceName;
     }
 
-    public void read(){
+    public void startReading(){
+        // discover usb first
+        findUsb();
 
         // Read some data! Most have just one port (port 0).
         Log.d(TAG, "ports: " + driver.getPorts());
@@ -121,5 +123,9 @@ public class SerialUsbHelper {
             }
             mPort = null;
         }
+    }
+
+    public interface OnBufferFull{
+        void getBuffer(BufferFrames bf);
     }
 }

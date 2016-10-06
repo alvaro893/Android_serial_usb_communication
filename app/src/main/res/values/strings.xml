@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">TestMik3y</string>
+    <string name="title_activity_service">Serial service</string>
 </resources>

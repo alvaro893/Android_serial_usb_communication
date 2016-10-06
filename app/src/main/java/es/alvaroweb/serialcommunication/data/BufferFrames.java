@@ -12,7 +12,7 @@ public class BufferFrames {
     // NOTE: bytes values in java are from -126 to 127, but -1 is 0x77 equivalent
     final static byte FF = -1;
     final static byte[] INITIAL_SEQUENCE = {FF, FF, FF};
-    private static final int MAX_BUFFER = 20;
+    private static final int MAX_BUFFER = 50;
     private byte[] mSequence = new byte[3];
     private boolean mItIsFirstTime = true;
     private Frame[] mBuffer;
