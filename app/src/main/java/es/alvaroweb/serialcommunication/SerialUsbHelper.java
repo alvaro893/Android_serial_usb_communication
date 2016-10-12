@@ -28,6 +28,7 @@ import es.alvaroweb.serialcommunication.data.Chunk;
 public class SerialUsbHelper {
     private static final String TAG = SerialUsbHelper.class.getSimpleName();
     private static final int BAUD_RATE = 115200;
+    private final SerialInputOutputManager.Listener mListener;
     private String deviceName;
     private UsbSerialDriver driver;
     private final Context context;
@@ -35,40 +36,38 @@ public class SerialUsbHelper {
     private SerialInputOutputManager mSerialIoManager;
     private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
     private UsbSerialPort mPort;
-    private BufferFrames bufferFrames;
-    private OnBufferFull callback;
-
-    public final SerialInputOutputManager.Listener mListener =
-            new SerialInputOutputManager.Listener() {
-
-                @Override
-                public void onRunError(Exception e) {
-                    Log.d(TAG, "Runner stopped.");
-                }
-
-                @Override
-                public void onNewData(final byte[] data) {
-                    if(bufferFrames.isFull()){
-//                        context.runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                ((MainActivity) context).updateReceivedData(bufferFrames);
-//                            }
-//                        });
-                        callback.getBuffer(bufferFrames);
-                        bufferFrames = new BufferFrames(); // stop();
-                    }else{
-                        bufferFrames.addChunk(new Chunk(data));
-                    }
-                }
-            };
 
 
+//    public final SerialInputOutputManager.Listener mListener =
+//            new SerialInputOutputManager.Listener() {
+//
+//                @Override
+//                public void onRunError(Exception e) {
+//                    Log.d(TAG, "Runner stopped.");
+//                }
+//
+//                @Override
+//                public void onNewData(final byte[] data) {
+//                    if(bufferFrames.isFull()){
+////                        context.runOnUiThread(new Runnable() {
+////                            @Override
+////                            public void run() {
+////                                ((MainActivity) context).updateReceivedData(bufferFrames);
+////                            }
+////                        });
+//                        callback.getBuffer(bufferFrames);
+//                        bufferFrames = new BufferFrames(); // stop();
+//                    }else{
+//                        bufferFrames.addChunk(new Chunk(data));
+//                    }
+//                }
+//            };
 
-    public SerialUsbHelper(Context context, OnBufferFull callback) {
+
+
+    public SerialUsbHelper(Context context, SerialInputOutputManager.Listener mListener) {
         this.context = context;
-        this.bufferFrames = new BufferFrames();
-        this.callback = callback;
+        this.mListener = mListener;
     }
 
 
@@ -125,7 +124,7 @@ public class SerialUsbHelper {
         }
     }
 
-    public interface OnBufferFull{
-        void getBuffer(BufferFrames bf);
-    }
+//    public interface OnBufferFull{
+//        void getBuffer(BufferFrames bf);
+//    }
 }

@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.Button;
 
 import es.alvaroweb.serialcommunication.R;
-import es.alvaroweb.serialcommunication.networking.MyService;
+import es.alvaroweb.serialcommunication.networking.UsbToNetworkService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,17 +30,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startReading(View v){
-        startService(new Intent(this, MyService.class));
+        startService(new Intent(this, UsbToNetworkService.class));
         serviceState();
     }
 
     public void stopReading(View v){
-        stopService(new Intent(this, MyService.class));
+        stopService(new Intent(this, UsbToNetworkService.class));
         serviceState();
     }
 
     private void serviceState(){
-        if(isMyServiceRunning(MyService.class)){
+        if(isMyServiceRunning(UsbToNetworkService.class)){
             readButton.setBackgroundColor(Color.GREEN);
             stopButton.setBackgroundColor(Color.GREEN);
         }else{
