@@ -18,7 +18,7 @@ public class UsbToNetworkService extends Service implements SerialInputOutputMan
     private static final int PORT = 4444;
     private static final String HOST = "ircloud.ddns.net";
     private SerialUsbHelper serialUsbHelper;
-    private SocketConnection socket;
+    private UdpSocket udpSocket;
 
 
     public UsbToNetworkService() {
@@ -47,8 +47,12 @@ public class UsbToNetworkService extends Service implements SerialInputOutputMan
 
     @Override
     public void onNewData(byte[] data) {
-        socket.reciveFromSource(data);
-        logData(data);
+        try {
+            udpSocket.send(data);
+            logData(data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -67,16 +71,18 @@ public class UsbToNetworkService extends Service implements SerialInputOutputMan
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
+                opentSocket();
                 // the onNewData listener is implemented in the Service
                 serialUsbHelper = new SerialUsbHelper(getApplicationContext(), UsbToNetworkService.this);
                 serialUsbHelper.startReading();
             }
         });
+        t.start();
     }
 
     private void opentSocket() {
         try {
-            socket = new SocketConnection(HOST, PORT);
+            udpSocket = new UdpSocket();
         } catch (IOException e) {
             Log.d(DEBUG_TAG, "could not create socket: " + e.getMessage());
         }

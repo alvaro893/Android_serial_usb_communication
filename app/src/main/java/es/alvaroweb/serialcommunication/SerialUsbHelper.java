@@ -91,7 +91,7 @@ public class SerialUsbHelper {
         return deviceName;
     }
 
-    public void startReading(){
+    public synchronized void startReading(){
         // discover usb first
         findUsb();
 
@@ -112,7 +112,7 @@ public class SerialUsbHelper {
         }
     }
 
-    public void stop() {
+    public synchronized void stop() {
         mSerialIoManager.stop();
         if (mPort != null) {
             try {
