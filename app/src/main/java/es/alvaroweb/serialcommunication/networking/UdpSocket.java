@@ -15,11 +15,17 @@ import java.net.SocketException;
  */
 public class UdpSocket {
 
-    private static final String LOCAL_HOST = "192.168.20.100";
-    private static final int SENDING_PORT = 4445;
+    private String LOCAL_HOST = "192.168.20.100";
+    private int SENDING_PORT = 4445;
     DatagramSocket socket;
 
-    public UdpSocket() throws SocketException {this.socket = new DatagramSocket();}
+    public UdpSocket(String host, int port) throws SocketException {
+        this.socket = new DatagramSocket();
+        if(host != null){
+            LOCAL_HOST = host;
+            SENDING_PORT = port;
+        }
+    }
 
     public void send(byte[] data) throws IOException {
         if(socket.isClosed()){

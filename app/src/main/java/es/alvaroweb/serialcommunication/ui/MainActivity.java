@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 import es.alvaroweb.serialcommunication.R;
 import es.alvaroweb.serialcommunication.networking.UsbToNetworkService;
@@ -15,8 +16,12 @@ import es.alvaroweb.serialcommunication.networking.UsbToNetworkService;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getName();
+    public static final String HOST_KEY = "HOST";
+    public static final String PORT_KEY = "PORT";
     private Button readButton;
     private Button stopButton;
+    private EditText host;
+    private EditText port;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,12 +30,16 @@ public class MainActivity extends AppCompatActivity {
 
         readButton = (Button) findViewById(R.id.button2);
         stopButton = (Button) findViewById(R.id.button3);
+        host = (EditText) findViewById(R.id.host);
+        port = (EditText) findViewById(R.id.port);
 
-        serviceState();
     }
 
     public void startReading(View v){
-        startService(new Intent(this, UsbToNetworkService.class));
+        Intent intent = new Intent(this, UsbToNetworkService.class);
+        intent.putExtra(HOST_KEY, host.getText().toString());
+        intent.putExtra(PORT_KEY, Integer.parseInt(port.getText().toString()));
+        startService(intent);
         serviceState();
     }
 
